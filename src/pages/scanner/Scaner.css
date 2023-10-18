@@ -1,0 +1,21 @@
+.fadeOut {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  transition: width 2s, height 2s, opacity 2s 2s;
+}
+.fadeIn {
+  opacity: 1;
+  width: 100px;
+  height: 100px;
+  transition: width 2s, height 2s, opacity 2s 2s;
+}
+@media print {
+  .WMPrint {
+    /* Adjust the dimensions for a small ticket */
+    width: 76mm; /* Example width for a small ticket */
+    height: 127mm; /* Example height for a small ticket */
+    margin: 0; /* Remove any default margin */
+    padding: 0; /* Remove any default padding */
+  }
+}
