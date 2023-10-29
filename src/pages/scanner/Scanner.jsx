@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import useScanDetection from "use-scan-detection";
-import ReactToPrint from "react-to-print";
 import { BASE_API_URL } from "../../config/Api";
 
 import Sidebar from "../../components/sidebar/Sidebar";
@@ -8,7 +6,6 @@ import Navbar from "../../components/navbar/Navbar";
 import axios from "axios";
 import { Oval } from "react-loader-spinner";
 import { Checkmark } from "react-checkmark";
-import Single from "../single/Single";
 import Detail from "../single/Detail";
 import { AiFillCloseCircle } from "react-icons/ai";
 import React, { useRef } from "react";
@@ -28,16 +25,18 @@ const Scanner = () => {
   });
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.keyCode === 17 || e.keyCode === 16 || e.keyCode === 74) {
+      if (e.keyCode === 13 || e.keyCode === 16) {
         e.preventDefault();
-        setNewKey(newKey);
+        setNewKey("");
+        console.log("--------------------------" + e.key + "-----" + e.keyCode);
 
         // Handle your barcode scanning logic here
-      } else if (e.keyCode === 13) {
-        setNewKey("");
       } else {
-        setNewKey(newKey + e.key);
+        console.log("--------------------------" + e.key + "-----" + e.keyCode);
+
+        setNewKey("" + e.key);
       }
+
       setData(newKey);
     };
 
@@ -49,7 +48,8 @@ const Scanner = () => {
   }, [newKey]);
 
   useEffect(() => {
-    if (data) getEmployeeScan(newKey);
+    /* if (data) { */
+    getEmployeeScan(57);
   }, [data]);
 
   const getEmployeeScan = async (id) => {
@@ -59,12 +59,12 @@ const Scanner = () => {
         setIsLoading(true);
         setRes(response.data);
         setIsLoading(false);
-
         getDetail(id);
-
         setTimeout(() => {
           setRes(null);
-        }, 1200);
+          setNewKey("");
+          setData();
+        }, 1000);
       })
       .catch(function (error) {});
   };
@@ -80,7 +80,8 @@ const Scanner = () => {
       .get(`${BASE_API_URL}/employees/getEmployee/${id}`)
       .then(function (response) {
         setEmp(response.data);
-        fetchImage(response.data.photoProfile);
+        if (response.data.photoProfile != null)
+          fetchImage(response.data.photoProfile);
       })
       .catch(function (error) {});
   };

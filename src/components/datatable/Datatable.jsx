@@ -1,4 +1,5 @@
 import "./datatable.scss";
+import * as React from "react";
 import "react-notifications/lib/notifications.css";
 import {
   NotificationContainer,
@@ -9,11 +10,24 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
-import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { BASE_API_URL } from "../../config/Api.js";
 import { Button } from "@mui/material";
 import SyncIcon from "@mui/icons-material/Sync";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 const Datatable = () => {
+  const [open, setOpen] = React.useState(false);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 70 },
     { field: "matricule", headerName: "Matricule", width: 120 },
@@ -48,7 +62,7 @@ const Datatable = () => {
     await axios
       .get(`${BASE_API_URL}/employees/generateQrCode`)
       .then((response) =>
-        response.data == true
+        response.data === true
           ? createNotification("success", "Code generé avec succes")
           : createNotification("info", "Pas de code a generer")
       )
@@ -80,6 +94,7 @@ const Datatable = () => {
       .then((response) => {
         console.log(`Deleted post with ID ${id}`);
         setRow(row.filter((item) => item.id !== id));
+        setOpen(false);
       })
       .catch((error) => {
         console.error(error);
@@ -102,10 +117,29 @@ const Datatable = () => {
             </Link>
             <div
               className="deleteButton"
-              onClick={() => handleDelete(params.row.id)}
+              onClick={() => handleClickOpen(params.row.id)}
             >
               Delete
             </div>
+            <Dialog
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">Vous êtes sur?</DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  Vous êtes sur supprimer
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => handleDelete(params.row.id)}>Oui</Button>
+                <Button onClick={handleClose} autoFocus>
+                  Non
+                </Button>
+              </DialogActions>
+            </Dialog>
           </div>
         );
       },
@@ -123,7 +157,7 @@ const Datatable = () => {
           endIcon={<SyncIcon />}
           onClick={handleGenerateCode}
         >
-          Generer le code a bar
+          Generer le Badge
         </Button>
       </div>
       <DataGrid

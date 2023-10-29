@@ -29,7 +29,7 @@ const Detail = ({ emp, photo }) => {
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Prenom:</span>
-                  <span className="itemValue">{emp.firstName}</span>
+                  <span className="itemValue">{emp.lastName}</span>
                 </div>
               </div>
             </div>

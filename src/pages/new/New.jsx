@@ -3,7 +3,12 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import { useState } from "react";
-import { BASE_API_URL } from "../../config/Api.js";
+import {
+  BASE_API_URL,
+  DPT_Employee,
+  IVT_Employee,
+  CDR_Employee,
+} from "../../config/Api.js";
 import axios from "axios";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -15,6 +20,7 @@ const New = ({ inputs, title }) => {
     matricule: Yup.string().required("Matricule is required"),
     firstName: Yup.string().required("firstName is required"),
     lastName: Yup.string().required("lastName is required"),
+    typeEmployee: Yup.string().required("typeEmployee is required"),
     // Add other validation rules for your fields
   });
 
@@ -22,6 +28,7 @@ const New = ({ inputs, title }) => {
     matricule: "",
     firstName: "",
     lastName: "",
+    typeEmployee: "",
 
     // Add other form fields based on your Employee object
   };
@@ -30,12 +37,13 @@ const New = ({ inputs, title }) => {
   const onSubmit = async (values, { setSubmitting, resetForm }) => {
     // Implement the code to send the form data to the Spring Boot backend
     // You may use fetch or a library like axios
+    console.log("object" + values.typeEmployee);
     const formData = new FormData();
     formData.append("image", file);
 
     formData.append("firstName", values.firstName);
     formData.append("lastName", values.lastName);
-    formData.append("matricule", values.matricule);
+    formData.append("matricule", values.typeEmployee + "/" + values.matricule);
     try {
       const response = await fetch(`${BASE_API_URL}/employees/addEmployee`, {
         method: "POST",
@@ -102,6 +110,13 @@ const New = ({ inputs, title }) => {
                 </div>
                 <div>
                   <label htmlFor="matricule">Matricule</label>
+                  <Field as="select" id="typeEmployee" name="typeEmployee">
+                    <option value=""></option>
+                    <option value={DPT_Employee} label={DPT_Employee} />
+                    <option value={CDR_Employee} label={CDR_Employee} />
+                    <option value={IVT_Employee} label={IVT_Employee} />
+                  </Field>
+
                   <Field type="text" id="matricule" name="matricule" />
                   <ErrorMessage
                     name="matricule"
