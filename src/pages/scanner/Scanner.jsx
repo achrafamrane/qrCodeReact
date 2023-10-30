@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
-import { BASE_API_URL } from "../../config/Api";
-
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
+import React from "react";
+import BarcodeReader from "react-barcode-reader";
+import { BASE_API_URL } from "../../config/Api";
 import axios from "axios";
 import { Oval } from "react-loader-spinner";
 import { Checkmark } from "react-checkmark";
 import Detail from "../single/Detail";
 import { AiFillCloseCircle } from "react-icons/ai";
-import React, { useRef } from "react";
-import { useReactToPrint } from "react-to-print";
 import ComponentToPrint from "./ComponentToPrint";
 const Scanner = () => {
   const [photo, setPhoto] = useState(null);
@@ -19,39 +18,17 @@ const Scanner = () => {
   const [res, setRes] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [emp, setEmp] = useState({});
-  const componentRef = useRef();
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-  });
+  const handleScan = (newKey) => {
+    setData(newKey);
+  };
+  const handleError = (err) => {
+    setData(err);
+  };
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.keyCode === 13 || e.keyCode === 16) {
-        e.preventDefault();
-        setNewKey("");
-        console.log("--------------------------" + e.key + "-----" + e.keyCode);
-
-        // Handle your barcode scanning logic here
-      } else {
-        console.log("--------------------------" + e.key + "-----" + e.keyCode);
-
-        setNewKey("" + e.key);
-      }
-
-      setData(newKey);
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [newKey]);
-
-  useEffect(() => {
-    /* if (data) { */
-    getEmployeeScan(57);
+    if (data) {
+      getEmployeeScan(data);
+    }
   }, [data]);
-
   const getEmployeeScan = async (id) => {
     await axios
       .get(`${BASE_API_URL}/checkTicket/${id}`)
@@ -60,11 +37,13 @@ const Scanner = () => {
         setRes(response.data);
         setIsLoading(false);
         getDetail(id);
+
         setTimeout(() => {
           setRes(null);
-          setNewKey("");
-          setData();
-        }, 1000);
+          /*  setNewKey("");
+          setRes(null);
+          setData(); */
+        }, 2000);
       })
       .catch(function (error) {});
   };
@@ -85,16 +64,13 @@ const Scanner = () => {
       })
       .catch(function (error) {});
   };
-
   return (
     <div className="list">
       <Sidebar />
       <div className="listContainer">
         <Navbar />
-
         <div>
-          {/*           <h2>{data}</h2>
-           */}{" "}
+          <BarcodeReader onError={handleError} onScan={handleScan} />
           {isLoading && (
             <>
               <Oval
@@ -125,7 +101,6 @@ const Scanner = () => {
               <AiFillCloseCircle size={150} color="red" />
             </div>
           )}
-          {/*  <ComponentToPrint /> */}
         </div>
       </div>
     </div>

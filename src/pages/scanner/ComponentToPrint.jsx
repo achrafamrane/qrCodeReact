@@ -11,7 +11,7 @@ import {
   CDR_Employee,
   CDR_PRIX,
 } from "../../config/Api.js";
-const ComponentToPrint = ({ emp, photo }) => {
+const ComponentToPrint = ({  emp, photo }) => {
   const [date, setDate] = useState(new Date());
   const printRef = useRef();
   const handlePrint = useReactToPrint({
@@ -24,15 +24,22 @@ const ComponentToPrint = ({ emp, photo }) => {
   return (
     <div className="WMPrint">
       <h1 ref={printRef}>
-        <Detail emp={emp} photo={photo} />
-        <div>
-          {emp?.matricule?.startsWith(DPT_Employee)
-            ? DPT_PRIX
-            : emp?.matricule?.startsWith(CDR_Employee)
-            ? CDR_PRIX
-            : IVT_PRIX}
+        <div className="single">
+          <div className="singleContainer">
+            <div className="detailItem">
+              <span className="itemKey">Matricule:</span>
+              <span className="itemValue">{emp.matricule}</span>
+            </div>
+            <div>
+              {emp?.matricule?.startsWith(DPT_Employee)
+                ? DPT_PRIX
+                : emp?.matricule?.startsWith(CDR_Employee)
+                ? CDR_PRIX
+                : IVT_PRIX}
+            </div>
+            <span> {date.toLocaleDateString()}</span>
+          </div>
         </div>
-        <span> {date.toLocaleDateString()}</span>
       </h1>
     </div>
   );
